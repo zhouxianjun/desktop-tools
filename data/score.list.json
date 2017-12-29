@@ -1,0 +1,77 @@
+{
+  "code": 200,
+  "data": {
+    "in_group": [
+      {
+        "id": 31,
+        "name": "555",
+        "student": [
+          {
+            "add": 4,
+            "class_id": 131706,
+            "real_name": "方英倩",
+            "student_id": 212318,
+            "subtract": -1
+          },
+          {
+            "add": 4,
+            "class_id": 131706,
+            "real_name": "吴雨桐",
+            "student_id": 133305,
+            "subtract": -1
+          },
+          {
+            "add": 7,
+            "class_id": 131706,
+            "real_name": "熊志高",
+            "student_id": 205600,
+            "subtract": -4
+          }
+        ]
+      },
+      {
+        "id": 32,
+        "name": "第2组",
+        "student": [
+          {
+            "add": 0,
+            "class_id": 131706,
+            "real_name": "周宇",
+            "student_id": 202741,
+            "subtract": 0
+          },
+          {
+            "add": 0,
+            "class_id": 131706,
+            "real_name": "夏添",
+            "student_id": 31253,
+            "subtract": 0
+          }
+        ]
+      },
+      {
+        "id": 33,
+        "name": "第3组",
+        "student": [
+          {
+            "add": 0,
+            "class_id": 131706,
+            "real_name": "陶瑜",
+            "student_id": 212314,
+            "subtract": 0
+          },
+          {
+            "add": 0,
+            "class_id": 131706,
+            "real_name": "任亚丹",
+            "student_id": 212327,
+            "subtract": 0
+          }
+        ]
+      }
+    ],
+    "un_group": []
+  },
+  "msg": "",
+  "page": null
+}

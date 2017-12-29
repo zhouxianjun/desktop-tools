@@ -1,0 +1,60 @@
+{
+  "name": "hxq",
+  "version": "1.0.0",
+  "description": "好学区快捷工具",
+  "main": "main.js",
+  "scripts": {
+    "postinstall": "electron-builder install-app-deps",
+    "dev": "set NODE_ENV=dev&&cd www&& webpack -w --progress",
+    "test": "set NODE_ENV=test&&cd www&& webpack --progress",
+    "production": "set NODE_ENV=production&&cd www&& webpack --progress"
+  },
+  "author": "Alone",
+  "license": "ISC",
+  "dependencies": {
+    "axios": "^0.17.1",
+    "iview": "^2.8.0",
+    "jquery": "^3.2.1",
+    "lowdb": "^1.0.0",
+    "vue": "^2.5.11",
+    "vue-router": "^3.0.1"
+  },
+  "devDependencies": {
+    "autoprefixer-loader": "^3.2.0",
+    "babel-core": "^6.26.0",
+    "babel-loader": "^7.1.2",
+    "babel-plugin-import": "^1.6.3",
+    "css-loader": "^0.28.7",
+    "electron": "^1.7.10",
+    "electron-builder": "^19.49.2",
+    "extract-text-webpack-plugin": "^3.0.2",
+    "file-loader": "^1.1.6",
+    "glob": "^7.1.2",
+    "html-loader": "^0.5.1",
+    "html-webpack-plugin": "^2.30.1",
+    "less": "^2.7.3",
+    "less-loader": "^4.0.5",
+    "style-loader": "^0.19.1",
+    "url-loader": "^0.6.2",
+    "vue-loader": "^13.6.0",
+    "vue-template-compiler": "^2.5.11",
+    "webpack": "^3.10.0"
+  },
+  "build": {
+    "appId": "com.hxq.float",
+    "copyright": "HXQ",
+    "productName": "好学区",
+    "compression": "normal",
+    "files": [
+      "!**/www",
+      "!**/env",
+      "!**/dist",
+      "!**/data"
+    ],
+    "nsis": {
+      "oneClick": true,
+      "perMachine": true,
+      "runAfterFinish": true
+    }
+  }
+}
