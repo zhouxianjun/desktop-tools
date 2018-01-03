@@ -18,12 +18,12 @@
             return {
                 show: false,
                 dragging: false,
+                isMove: false,
                 x: null,
                 y: null
             }
         },
         async mounted() {
-            console.log('in');
             $('.draggable').mousedown(e => {
                 this.dragging = true;
                 this.x = e.pageX;
@@ -34,6 +34,7 @@
                 e.stopPropagation();
                 e.preventDefault();
                 if (this.dragging) {
+                    this.isMove = true;
                     let xLoc = e.screenX - this.x;
                     let yLoc = e.screenY - this.y;
 
@@ -47,41 +48,52 @@
 
             $(window).mouseup(() => {
                 this.dragging = false;
+                this.isMove = false;
+            });
+
+            // 预加载
+            Common.openDialog('draw.html', {
+                width: screen.getPrimaryDisplay().workAreaSize.width,
+                height: screen.getPrimaryDisplay().workAreaSize.height,
+                alwaysOnTop: true
             });
         },
         methods: {
             toggle() {
                 this.show = !this.show;
-                console.log(this.show);
             },
             score() {
                 this.show = false;
-                this.open('score.html');
+                let win = Common.openDialog('score.html');
+                this.toggleDialog(win);
             },
             draw() {
                 this.show = false;
-                let win = this.open('draw.html', {
+                let win = Common.openDialog('draw.html', {
                     width: screen.getPrimaryDisplay().workAreaSize.width,
                     height: screen.getPrimaryDisplay().workAreaSize.height,
-                    // alwaysOnTop: true
+                    alwaysOnTop: true
                 });
-                win.once('show', () => {
-                    win.webContents.send('draw');
+                win.on('show', () => {
+                    ipcRenderer.send('rpc', 'draw');
                 });
+                this.toggleDialog(win);
             },
             timer() {
                 this.show = false;
+                let win = Common.openDialog('countdown.html', {
+                    width: 678,
+                    height: 150,
+                    alwaysOnTop: true
+                });
+                this.toggleDialog(win);
             },
-
-            open(page, config) {
-                let winId = ipcRenderer.sendSync('dialog', Object.assign({
-                    width: screen.getPrimaryDisplay().workAreaSize.width * 0.8,
-                    height: screen.getPrimaryDisplay().workAreaSize.height * 0.8
-                }, config), page);
-
-                let dialog = Common.getDialog(winId);
-                dialog.show();
-                return dialog;
+            toggleDialog(dialog) {
+                if (dialog.isVisible()) {
+                    dialog.hide();
+                } else {
+                    dialog.show();
+                }
             }
         }
     }

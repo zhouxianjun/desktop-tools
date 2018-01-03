@@ -72,8 +72,6 @@ let webpackConfig = {
             filename: '[name].css',
             allChunks: true
         }),
-        new webpack.optimize.DedupePlugin(),
-        new webpack.optimize.MinChunkSizePlugin({minChunkSize: 10000}),
         new webpack.ProvidePlugin({$: "jquery", jQuery: 'jquery'}),
         new webpack.DefinePlugin({
             config: JSON.stringify(require(`../env/${process.env['NODE_ENV'] || 'dev'}`))

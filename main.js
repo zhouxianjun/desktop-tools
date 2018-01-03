@@ -6,16 +6,17 @@ const ipc = electron.ipcMain;
 
 const low = require('lowdb');
 const FileSync = require('lowdb/adapters/FileSync');
-const Memory = require('lowdb/adapters/Memory');
 const dbs = {
     db: {
         defaults: {
-            draw: []
+            draw: [],
+            lastLogin: {
+                username: '',
+                password: ''
+            }
         }
     },
-    mem: {adapter: () => {return new Memory()}, defaults: {user: {}, students: []}},
-    user: {adapter: () => {return new Memory()}, defaults: {}},
-    students: {adapter: () => {return new Memory()}, defaults: []}
+    mem: {defaults: {user: {}, students: []}}
 };
 global.dbs = new Map();
 
@@ -25,13 +26,14 @@ global.windows = {};
 function createMainWindow(){
     global.windows.login = new BrowserWindow({
         width: 370,
-        height: 275,
-        frame: false
+        height: 235,
+        frame: false,
+        icon: path.join(__dirname, 'icon', 'logo72x7x.png')
     });
     //加载静态资源
     global.windows.login.loadURL(path.join(__dirname, 'html', 'login.html'));
     global.windows.login.on('closed', () => {
-        global.windows.login = null;
+        app.exit();
     });
 }
 function createFloatWindow() {
@@ -78,7 +80,6 @@ app.on('ready', async () => {
 
     ipc.on('showFloat', async () => {
         global.windows.float.show();
-        global.windows.login.hide();
     });
     ipc.on('dialog', async (event, config, url, force = false) => {
         global.windows.dialog = global.windows.dialog || new Map();
@@ -93,7 +94,7 @@ app.on('ready', async () => {
         } else {
             if (force === false) {
                 for (let d of global.windows.dialog.values()) {
-                    if (path.normalize(d.getURL()) === path.normalize(url)) {
+                    if (d.getURL().substring(d.getURL().lastIndexOf('/') + 1) === url.substring(url.lastIndexOf(path.sep) + 1)) {
                         dialog = d;
                         break;
                     }
@@ -106,15 +107,17 @@ app.on('ready', async () => {
                     resizable: false,
                     show: false,
                     closable: false,
+                    icon: path.join(__dirname, 'icon', 'logo72x7x.png'),
                     backgroundColor: '#802e2c29'
                 }, config));
-                dialog.on('close', () => {
-                    global.windows.dialog.delete(dialog.id);
+                dialog.on('closed', () => {
+                    global.windows.dialog.delete(dialog._id);
                 });
-                dialog.loadURL(url);
+                dialog._id = dialog.id;
                 dialog.webContents.on('did-finish-load', () => {
                     dialog.setBackgroundColor('#00000000');
                 });
+                dialog.loadURL(url);
             }
         }
         global.windows.dialog.set(dialog.id, dialog);
@@ -134,9 +137,6 @@ app.on('ready', async () => {
         global.windows.float.hide();
         global.windows.login.reload();
         global.windows.login.show();
-    });
-    ipc.on('mem', (event, method, ...args) => {
-        event.returnValue = Reflect.apply(global.dbs.get('mem')[method], global.dbs.get('mem'), args);
     });
 });
 

@@ -24,8 +24,8 @@
             }
         },
         mounted() {
-            this.draw();
             $(window).on('click', async e => {
+                if (this.timer) return;
                 if (e.target.tagName.toUpperCase() !== 'HTML') {
                     await Common.postScoreSingle(this, this.student['student_id'], this.student['real_name']);
                 }
@@ -44,7 +44,6 @@
                 let students = Common.db('mem').get('students').filter(item => {
                     return !draws.includes(item['student_id']);
                 }).value();
-                console.log(students);
                 if (!students || students.length < 1) {
                     let user = Common.db('mem').get('user').value();
                     students = Common.db('mem').get('students').value();
@@ -59,9 +58,10 @@
                     this.student = students[Math.floor(Math.random() * students.length + 1) - 1];
                 }, 100);
                 setTimeout(() => {
-                    Common.draw(this.student['student_id'], this.student['real_name']);
-                    Common.playAudio('loopAudio', true).then();
                     clearInterval(this.timer);
+                    this.timer = null;
+                    Common.playAudio('loopAudio', true).then();
+                    Common.draw(this.student['student_id'], this.student['real_name']);
                 }, 3000);
             }
         }

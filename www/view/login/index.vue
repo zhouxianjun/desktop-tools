@@ -3,7 +3,7 @@
         <!-- /.login-logo -->
         <div class="login-box-body">
             <p class="login-box-msg">登录开始您的会话</p>
-
+            <Button type="text" icon="close" class="close" @click="close"></Button>
             <Form ref="loginVo" :model="loginVo" :label-width="80" :rules="loginValidate">
                 <Form-item label="用户名" prop="username">
                     <Input v-model="loginVo.username" placeholder="请输入用户名" :disabled="isLogin">
@@ -15,14 +15,8 @@
                         <Icon type="ios-locked-outline" slot="prepend"></Icon>
                     </Input>
                 </Form-item>
-                <Form-item label="班级">
-                    <Select v-model="classes" style="width:200px" :disabled="!isLogin" placement="top">
-                        <Option v-for="item in classesList" :value="item.class_id" :key="item.class_id">{{ item.className }}</Option>
-                    </Select>
-                </Form-item>
                 <Form-item>
-                    <Button v-show="!isLogin" type="primary" @click="handleLogin">登录</Button>
-                    <Button v-show="isLogin" type="primary" @click="handleIn">进入</Button>
+                    <Button type="primary" @click="handleLogin" :loading="isLogin">登录</Button>
                 </Form-item>
             </Form>
         </div>
@@ -31,19 +25,17 @@
     <!-- /.login-box -->
 </template>
 <script>
-    import {ipcRenderer} from 'electron';
+    import {ipcRenderer, remote} from 'electron';
     import Common from "../../js/common";
     export default {
         data () {
             return {
                 user: null,
-                classes: null,
-                classesList: [],
-                classesMap: new Map(),
                 isLogin: false,
                 loginVo: {
-                    username: 'T17708463939',
-                    password: ''
+                    username: '',
+                    password: '',
+                    desktop: true
                 },
                 loginValidate: {
                     username: [
@@ -55,31 +47,38 @@
                 }
             }
         },
+        mounted() {
+            let lastLogin = Common.db().get('lastLogin').value();
+            if (lastLogin) {
+                Reflect.ownKeys(this.loginVo).forEach(key => Reflect.has(lastLogin, key) && (this.loginVo[key] = lastLogin[key]));
+            }
+        },
         methods: {
             handleLogin() {
                 this.$refs['loginVo'].validate(async valid => {
                     if (valid) {
+                        this.isLogin = true;
                         let loginResult = await this.login();
                         if (loginResult) {
-                            this.isLogin = true;
                             this.user = loginResult.user;
-                            await this.pullClasses(loginResult.user.id);
+                            Common.db().set('lastLogin', this.loginVo).write();
+                            Common.db('mem').set('user', this.user).write();
+                            this.selectClass();
+                        } else {
+                            this.isLogin = false;
                         }
                     } else {
                         this.$Message.error('校验失败!');
                     }
                 });
             },
-            async handleIn() {
-                if (!this.classes) {
-                    this.$Notice.error({title: '请选择班级'});
-                    return;
-                }
-                Common.db('mem').set('user', Object.assign({
-                    classes: this.classesMap.get(this.classes)
-                }, this.user)).write();
-                await Common.loadScore(this);
-                this.showFloat();
+            selectClass() {
+                Common.openDialog('select-class.html', {
+                    width: 600,
+                    height: 300,
+                    show: true
+                });
+                remote.getCurrentWindow().hide();
             },
             async login() {
                 return await this.fetch('user/login', {
@@ -88,38 +87,19 @@
                     headers: {'Content-Type': 'application/x-www-form-urlencoded'}
                 });
             },
-            async pullClasses(id) {
-                let result = await this.fetch('newTeacher/teachingList', {
-                    method: 'post',
-                    data: Common.JSON2URLForm({teacherId: id}),
-                    headers: {'Content-Type': 'application/x-www-form-urlencoded'}
-                });
-                if (!result) return result;
-                for (let subject of result) {
-                    let textbook = subject['textbook'];
-                    if (textbook) {
-                        for (let book of textbook) {
-                            book.class.forEach(value => {
-                                value.classId = value.class_id;
-                                value.className = `${subject.subjectName} - ${value.className}`;
-                                value.class_id = `${subject.id},${value.class_id}`;
-                                value.subject = subject.id;
-                                value.textbook = book['textbook_id'];
-                                this.classesMap.set(value.class_id, value);
-                            });
-                            this.classesList.push(...book.class);
-                        }
-                    }
-                }
-            },
-            showFloat() {
-                ipcRenderer.send('showFloat');
+            close() {
+                remote.getCurrentWindow().destroy();
             }
         }
     }
 </script>
 
 <style scoped>
+    .close {
+        position: absolute;
+        right: 10px;
+        top: 10px;
+    }
     .login-box {
         width: 360px;
     }

@@ -1,7 +1,22 @@
-import {ipcRenderer, remote} from 'electron';
+import {ipcRenderer, remote, screen} from 'electron';
 import $ from 'jquery';
 import low from 'lowdb';
 import FileSync from 'lowdb/adapters/FileSync';
+Date.prototype.Format = function (fmt) { //author: meizz
+    let o = {
+        "M+": this.getMonth() + 1, //月份
+        "d+": this.getDate(), //日
+        "h+": this.getHours(), //小时
+        "m+": this.getMinutes(), //分
+        "s+": this.getSeconds(), //秒
+        "q+": Math.floor((this.getMonth() + 3) / 3), //季度
+        "S": this.getMilliseconds() //毫秒
+    };
+    if (/(y+)/.test(fmt)) fmt = fmt.replace(RegExp.$1, (this.getFullYear() + "").substr(4 - RegExp.$1.length));
+    for (let k in o)
+        if (new RegExp("(" + k + ")").test(fmt)) fmt = fmt.replace(RegExp.$1, (RegExp.$1.length === 1) ? (o[k]) : (("00" + o[k]).substr(("" + o[k]).length)));
+    return fmt;
+};
 
 const DBS = new Map();
 
@@ -10,6 +25,13 @@ class Common {
         let dialog = remote.getGlobal('windows').dialog;
         if (!dialog) return null;
         return dialog.get(id);
+    }
+    static openDialog(page, config) {
+        let winId = ipcRenderer.sendSync('dialog', Object.assign({
+            width: screen.getPrimaryDisplay().workAreaSize.width * 0.8,
+            height: screen.getPrimaryDisplay().workAreaSize.height * 0.8
+        }, config), page);
+        return Common.getDialog(winId);
     }
     static getWindowHeight() {
         let winHeight = 0;
@@ -34,8 +56,8 @@ class Common {
         let dbs = remote.getGlobal('dbs');
         if (!dbs) return null;
         let value = dbs.get(name);
-        let adapter = name === 'mem' ? null : new FileSync(value.file);
-        let db = name === 'mem' ? value.value : low(adapter);
+        let adapter = new FileSync(value.file);
+        let db = low(adapter);
         DBS.set(name, db);
         return db;
     }
@@ -105,8 +127,8 @@ class Common {
         return data;
     }
 
-    static makeScoreParams() {
-        let user = Common.db('mem').get('user').value();
+    static makeScoreParams(user) {
+        user = user ? user : Common.db('mem').get('user').value();
         return {
             class_id: user.classes.classId,
             teacher_id: user.id,
@@ -116,10 +138,10 @@ class Common {
         }
     }
 
-    static async loadScore(vue) {
+    static async loadScore(vue, user) {
         let result = await vue.fetch('score/pull/list', {
             method: 'post',
-            data: Common.JSON2URLForm(Common.makeScoreParams()),
+            data: Common.JSON2URLForm(Common.makeScoreParams(user)),
             headers: {'Content-Type': 'application/x-www-form-urlencoded'}
         });
         Common.saveAllStudent(result);
