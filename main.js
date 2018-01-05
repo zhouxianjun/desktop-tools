@@ -38,10 +38,10 @@ function createMainWindow(){
 }
 function createFloatWindow() {
     global.windows.float = new BrowserWindow({
-        width: 150,
-        height: 150,
-        x: electron.screen.getPrimaryDisplay().workAreaSize.width - 150,
-        y: electron.screen.getPrimaryDisplay().workAreaSize.height - 300,
+        width: 250,
+        height: 250,
+        x: electron.screen.getPrimaryDisplay().workAreaSize.width - 300,
+        y: electron.screen.getPrimaryDisplay().workAreaSize.height - 350,
         transparent: true,
         alwaysOnTop: true,
         frame: false,

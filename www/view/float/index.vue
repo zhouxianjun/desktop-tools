@@ -1,12 +1,14 @@
 <template>
-    <div :class="['float-menu', 'draggable', show ? 'open' : '']">
-        <div class="plus" @click="toggle"></div>
-        <div class="menu-list">
-            <a class="score" @click="score">加分</a>
-            <a class="draw" @click="draw">抽签</a>
-            <a class="timer" @click="timer">计时器</a>
-            <a class="select-class" @click="selectClass">班级</a>
-        </div>
+    <div :class="['float-menu', show ? 'open' : '']">
+        <div class="plus draggable" @click="toggle"></div>
+        <transition name="fade">
+            <div class="menu-list" v-show="this.show">
+                <span class="draw" @click="draw"></span>
+                <span class="score" @click="score"></span>
+                <span class="timer" @click="timer"></span>
+                <span class="select-class" @click="selectClass"></span>
+            </div>
+        </transition>
     </div>
 </template>
 <script>
@@ -109,31 +111,38 @@
         }
     }
 </script>
+<style>
+    body {
+        margin: 0;
+        padding: 0;
+    }
+    .fade-enter-active, .fade-leave-active {
+        transition: opacity .5s
+    }
+    .fade-enter, .fade-leave-to {
+        opacity: 0
+    }
+</style>
 <style scoped>
     * {
         margin: 0;
         padding: 0;
-        list-style: none;
     }
 
     .float-menu {
-        width: 50px;
-        height: 50px;
+        width: 250px;
+        height: 250px;
         position: fixed;
         -webkit-app-region: no-drag;
         z-index: 99999;
-        left: 50px;
-        top: 50px;
-    }
-
-    .float-menu div {
-        transition: all 0.2s linear;
     }
 
     .float-menu .plus {
-        width: 100%;
-        height: 100%;
-        background: url(../../img/logo96.png) no-repeat center center;
+        width: 30%;
+        height: 30%;
+        left: 35%;
+        top: 35%;
+        background: url(../../img/l1.png) no-repeat center center;
         background-size: 100%;
         z-index: 2;
         position: absolute;
@@ -150,63 +159,55 @@
         position: absolute;
     }
 
-    .float-menu .menu-list a {
-        width: 33%;
-        height: 16%;
+    .float-menu .menu-list span {
+        width: 48px;
+        height: 48px;
         display: block;
-        text-align: center;
-        padding-top: 17%;
-        opacity: 0;
-        color: #333;
-        font-size: 12px;
-        text-decoration: none;
         position: absolute;
         cursor: pointer;
     }
-
-    .float-menu .menu-list a.score {
-        left: 50%;
-        top: 0;
-        transform: translate(-50%, 0);
-        /*background: url(../images/icon_home.png) no-repeat center 5px;*/
-        background-size: 50%;
-    }
-
-    .float-menu .menu-list a.draw {
-        transform: translate(0%, -50%);
-        /*background: url(../images/icon_me.png) no-repeat center top;*/
-        background-size: 50%;
-        left: 0;
-        top: 50%;
-    }
-
-    .float-menu .menu-list a.timer {
-        left: 50%;
-        bottom: 0;
-        transform: translate(-50%, 0);
-        /*background: url(../images/icon_cart.png) no-repeat center top;*/
-        background-size: 50%;
-    }
-
-    .float-menu .menu-list a.select-class {
-        right: 0;
+    .float-menu .menu-list span.score {
+        left: 15px;
         top: 50%;
         transform: translate(0%, -50%);
-        /*background: url(../images/icon_cart.png) no-repeat center top;*/
-        background-size: 50%;
+        background: url(../../img/score.png) no-repeat;
+        background-size: 100%;
     }
 
-    .float-menu.open .menu-list a {
+    .float-menu .menu-list span.draw {
+        background: url(../../img/draw.png) no-repeat;
+        background-size: 100%;
+        left: 50%;
+        top: 15px;
+        transform: translate(-50%, 0);
+    }
+    .float-menu .menu-list span.timer {
+        left: 50%;
+        bottom: 15px;
+        transform: translate(-50%, 0);
+        background: url(../../img/timer.png) no-repeat;
+        background-size: 100%;
+    }
+    .float-menu .menu-list span.select-class {
+        top: 50%;
+        right: 15px;
+        background: url(../../img/class.png) no-repeat;
+        background-size: 100%;
+        transform: translate(0%, -50%);
+    }
+
+    .float-menu.open .menu-list span {
         opacity: 1;
-        font-size: 12px;
     }
 
     .float-menu.open .menu-list {
         opacity: 1;
-        width: 300%;
-        height: 300%;
-        left: -100%;
-        top: -100%;
-        background-color: rgba(255, 232, 78, .7);
+        width: 100%;
+        height: 100%;
+        background-color: #003366;
+    }
+    .float-menu.open .plus {
+        background: url(../../img/l2.png) no-repeat center center;
+        background-size: 100%;
     }
 </style>
