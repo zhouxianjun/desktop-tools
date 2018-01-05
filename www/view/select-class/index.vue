@@ -3,6 +3,7 @@
         <Header class="head">
             <Icon type="ribbon-b" class="icon"></Icon>
             <span>选择班级</span>
+            <Button type="text" icon="close" class="close" @click="close"></Button>
         </Header>
         <Content class="content">
             <Table stripe :columns="columns" :data="data" height="225"></Table>
@@ -10,7 +11,7 @@
     </Layout>
 </template>
 <script>
-    import {ipcRenderer, remote} from 'electron';
+    import {ipcRenderer, remote, screen} from 'electron';
     import Common from '../../js/common';
     import $ from 'jquery';
     export default {
@@ -95,10 +96,21 @@
                     Common.db('mem').set('user.classes', item.row).write();
                     await Common.loadScore(this);
                     ipcRenderer.send('showFloat');
+                    // 预加载
+                    Common.openDialog('draw.html', {
+                        title: '抽签',
+                        width: screen.getPrimaryDisplay().workAreaSize.width,
+                        height: screen.getPrimaryDisplay().workAreaSize.height,
+                        alwaysOnTop: true
+                    });
                     remote.getCurrentWindow().destroy();
                 } catch (e) {
                     this.loading = false;
                 }
+            },
+
+            close() {
+                remote.getGlobal('windows').login.destroy();
             }
         }
     }
@@ -130,16 +142,19 @@
         overflow: auto;
         border: 1px solid #dddee1;
     }
-    .min-size {
-        float: right;
-        -webkit-app-region: no-drag;
-        font-size: 16px;
-        color: white;
-    }
 
     .content {
         padding: 1rem;
         width: 100%;
         height: 100%;
+    }
+
+    .close {
+        position: absolute;
+        right: 12px;
+        color: white;
+        top: 10px;
+        padding: 0;
+        -webkit-app-region: no-drag;
     }
 </style>

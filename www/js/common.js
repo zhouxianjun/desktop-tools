@@ -73,14 +73,16 @@ class Common {
     static draw(student, name) {
         let user = Common.db('mem').get('user').value();
         let draw = Common.db().get('draw');
-        let has = draw.find({student}).value();
-        if (!has) {
+        let has = draw.find({student, class_id: user.classes.classId});
+        if (!has.value()) {
             draw.push({
                 student,
                 name,
                 class_id: user.classes.classId,
                 date: Date.now()
             }).write();
+        } else {
+            has.set('date', Date.now()).write();
         }
     }
 

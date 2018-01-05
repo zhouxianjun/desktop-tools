@@ -130,13 +130,14 @@ app.on('ready', async () => {
         }
     });
     ipc.on('toLogin', () => {
-        for (let win of global.windows.dialog.values()) {
-            win.destroy();
-        }
-        global.windows.dialog.clear();
+        clearDialog();
         global.windows.float.hide();
         global.windows.login.reload();
         global.windows.login.show();
+    });
+    ipc.on('clearDialog', (e) => {
+        clearDialog();
+        e.returnValue = true;
     });
 });
 
@@ -160,4 +161,10 @@ async function initDB() {
         value.defaults(dbs[name].defaults).write();
         global.dbs.set(name, {file, value, adapter: dbs[name].adapter});
     }
+}
+function clearDialog() {
+    for (let win of global.windows.dialog.values()) {
+        win.destroy();
+    }
+    global.windows.dialog.clear();
 }

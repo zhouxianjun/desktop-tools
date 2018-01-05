@@ -55,6 +55,7 @@
                     return;
                 }
                 this.timer = setInterval(() => {
+                    if (!this.timer) return;
                     this.student = students[Math.floor(Math.random() * students.length + 1) - 1];
                 }, 100);
                 setTimeout(() => {

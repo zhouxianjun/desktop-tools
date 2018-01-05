@@ -74,6 +74,7 @@
             },
             selectClass() {
                 Common.openDialog('select-class.html', {
+                    title: '选择班级',
                     width: 600,
                     height: 300,
                     show: true

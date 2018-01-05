@@ -5,6 +5,7 @@
             <a class="score" @click="score">加分</a>
             <a class="draw" @click="draw">抽签</a>
             <a class="timer" @click="timer">计时器</a>
+            <a class="select-class" @click="selectClass">班级</a>
         </div>
     </div>
 </template>
@@ -50,13 +51,6 @@
                 this.dragging = false;
                 this.isMove = false;
             });
-
-            // 预加载
-            Common.openDialog('draw.html', {
-                width: screen.getPrimaryDisplay().workAreaSize.width,
-                height: screen.getPrimaryDisplay().workAreaSize.height,
-                alwaysOnTop: true
-            });
         },
         methods: {
             toggle() {
@@ -64,12 +58,15 @@
             },
             score() {
                 this.show = false;
-                let win = Common.openDialog('score.html');
+                let win = Common.openDialog('score.html', {
+                    title: '加分'
+                });
                 this.toggleDialog(win);
             },
             draw() {
                 this.show = false;
                 let win = Common.openDialog('draw.html', {
+                    title: '抽签',
                     width: screen.getPrimaryDisplay().workAreaSize.width,
                     height: screen.getPrimaryDisplay().workAreaSize.height,
                     alwaysOnTop: true
@@ -82,11 +79,25 @@
             timer() {
                 this.show = false;
                 let win = Common.openDialog('countdown.html', {
+                    title: '倒计时',
                     width: 678,
                     height: 150,
+                    x: screen.getPrimaryDisplay().workAreaSize.width / 2 - 678 / 2,
+                    y: 60,
                     alwaysOnTop: true
                 });
                 this.toggleDialog(win);
+            },
+            selectClass() {
+                this.show = false;
+                ipcRenderer.sendSync('clearDialog');
+                Common.openDialog('select-class.html', {
+                    title: '选择班级',
+                    width: 600,
+                    height: 300,
+                    show: true
+                });
+                remote.getCurrentWindow().hide();
             },
             toggleDialog(dialog) {
                 if (dialog.isVisible()) {
@@ -173,6 +184,14 @@
         left: 50%;
         bottom: 0;
         transform: translate(-50%, 0);
+        /*background: url(../images/icon_cart.png) no-repeat center top;*/
+        background-size: 50%;
+    }
+
+    .float-menu .menu-list a.select-class {
+        right: 0;
+        top: 50%;
+        transform: translate(0%, -50%);
         /*background: url(../images/icon_cart.png) no-repeat center top;*/
         background-size: 50%;
     }
