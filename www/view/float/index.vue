@@ -1,6 +1,6 @@
 <template>
-    <div :class="['float-menu', show ? 'open' : '']">
-        <div class="plus draggable" @click="toggle"></div>
+    <div :class="['float-menu', 'draggable', show ? 'open' : '']">
+        <div class="plus" @click="toggle"></div>
         <transition name="fade">
             <div class="menu-list" v-show="this.show">
                 <span class="draw" @click="draw"></span>
@@ -27,7 +27,7 @@
             }
         },
         async mounted() {
-            $('.draggable').mousedown(e => {
+            $('.plus').mousedown(e => {
                 this.dragging = true;
                 this.x = e.pageX;
                 this.y = e.pageY;
@@ -83,9 +83,9 @@
                 let win = Common.openDialog('countdown.html', {
                     title: '倒计时',
                     width: 678,
-                    height: 150,
+                    height: 165,
                     x: screen.getPrimaryDisplay().workAreaSize.width / 2 - 678 / 2,
-                    y: 60,
+                    y: 80,
                     alwaysOnTop: true
                 });
                 this.toggleDialog(win);
@@ -209,5 +209,11 @@
     .float-menu.open .plus {
         background: url(../../img/l2.png) no-repeat center center;
         background-size: 100%;
+    }
+    .draggable {
+        -webkit-app-region: drag;
+    }
+    .plus, .float-menu .menu-list span {
+        -webkit-app-region: no-drag;
     }
 </style>

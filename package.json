@@ -1,15 +1,19 @@
 {
   "name": "hxq",
-  "version": "1.0.2",
+  "version": "1.0.4",
   "description": "好学区快捷工具",
   "main": "main.js",
+  "productName": "hxq",
   "scripts": {
     "postinstall": "electron-builder install-app-deps",
+    "start": "electron .",
     "dev": "set NODE_ENV=dev&&cd www&& webpack -w --progress",
     "test": "set NODE_ENV=test&&cd www&& webpack --progress",
     "production": "set NODE_ENV=production&&cd www&& webpack --progress",
     "distx64": "build -w --x64",
-    "distx32": "build -w --ia32"
+    "distx32": "build -w --ia32",
+    "installer": "electron-installer-squirrel-windows --debug ./dist/win-unpacked",
+    "packager": "electron-packager . HXQ --win --out ./OutApp --overwrite"
   },
   "author": "Alone",
   "license": "ISC",
@@ -29,6 +33,9 @@
     "css-loader": "^0.28.7",
     "electron": "^1.7.10",
     "electron-builder": "^19.49.2",
+    "electron-installer-squirrel-windows": "^1.3.0",
+    "electron-packager": "^10.1.1",
+    "electron-squirrel-startup": "^1.0.0",
     "extract-text-webpack-plugin": "^3.0.2",
     "file-loader": "^1.1.6",
     "glob": "^7.1.2",
