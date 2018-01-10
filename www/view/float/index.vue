@@ -42,7 +42,7 @@
                     let yLoc = e.screenY - this.y;
 
                     try {
-                        remote.BrowserWindow.getFocusedWindow().setPosition(xLoc, yLoc);
+                        remote.getCurrentWindow().setPosition(xLoc, yLoc);
                     } catch (err) {
                         console.log(err);
                     }
@@ -133,7 +133,6 @@
         width: 250px;
         height: 250px;
         position: fixed;
-        -webkit-app-region: no-drag;
         z-index: 99999;
     }
 

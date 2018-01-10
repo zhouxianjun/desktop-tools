@@ -100,6 +100,7 @@
         position: absolute;
         right: 10px;
         top: 10px;
+        -webkit-app-region: no-drag;
     }
     .login-box {
         width: 360px;

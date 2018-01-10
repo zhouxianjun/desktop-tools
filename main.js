@@ -18,6 +18,9 @@ const dbs = {
     },
     mem: {defaults: {user: {}, students: []}}
 };
+// 启用CPU渲染（有些机器GPU渲染对悬浮窗不支持）
+app.disableHardwareAcceleration();
+
 global.dbs = new Map();
 
 //保持一个全局的窗口对象，可以不显示，如果没有这个对象，窗口点击关闭的时候，js对象会被gc干掉
@@ -28,6 +31,8 @@ function createMainWindow(){
         width: 370,
         height: 235,
         frame: false,
+        resizable: false,
+        minimizable: false,
         icon: path.join(__dirname, 'icon', 'logo72x7x.png')
     });
     //加载静态资源
@@ -40,6 +45,8 @@ function createFloatWindow() {
     global.windows.float = new BrowserWindow({
         width: 250,
         height: 250,
+        maxWidth: 250,
+        maxHeight: 250,
         x: electron.screen.getPrimaryDisplay().workAreaSize.width - 300,
         y: electron.screen.getPrimaryDisplay().workAreaSize.height - 350,
         transparent: true,
@@ -56,6 +63,7 @@ function createFloatWindow() {
     global.windows.float.on('close', (e) => {
         app.quit();
     });
+    // 太快设置顶层在某些机器上会导致无法显示
     global.windows.float.once('show', (e) => {
         setTimeout(() => global.windows.float.setAlwaysOnTop(true), 1000);
     });
