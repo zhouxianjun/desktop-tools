@@ -1,5 +1,5 @@
 <template>
-    <div>
+    <div id="main" :style="{height: `${windowHeight}px`, background: 'rgba(0, 0, 0, 0.5)'}">
         <div id="draw" class="dl-box">
             <div class="name f-300">{{student['real_name']}}</div>
         </div>
@@ -20,13 +20,15 @@
                 loopAudio,
                 loveAudio,
                 student: {},
-                timer: null
+                timer: null,
+                windowHeight: 0
             }
         },
         mounted() {
+            this.windowHeight = Common.getWindowHeight();
             $(window).on('click', async e => {
                 if (this.timer) return;
-                if (e.target.tagName.toUpperCase() !== 'HTML') {
+                if (e.target.id !== 'main') {
                     await Common.postScoreSingle(this, this.student['student_id'], this.student['real_name']);
                 }
                 remote.getCurrentWindow().hide();
