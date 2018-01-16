@@ -12,6 +12,8 @@
     "production": "set NODE_ENV=production&&cd www&& webpack --progress",
     "distx64": "build -w --x64",
     "distx32": "build -w --ia32",
+    "distmacx64": "build -m --x64",
+    "distmacx32": "build -m --x32",
     "installer": "electron-installer-squirrel-windows --debug ./dist/win-unpacked",
     "packager": "electron-packager . HXQ --win --out ./OutApp --overwrite"
   },
